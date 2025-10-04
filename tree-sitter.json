@@ -1,0 +1,40 @@
+{
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
+  "grammars": [
+    {
+      "name": "fix",
+      "camelcase": "FIX",
+      "scope": "source.fix",
+      "file-types": [
+        "fix"
+      ],
+      "content-regex": "^(8=FIX)",
+      "injection-regex": "^fix$",
+      "class-name": "TreeSitterFix"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Financial Information eXchange (FIX®) protocol grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "Sergey Lukashevich",
+        "email": "sergey.lukashevi4@gmail.com"
+      }
+    ],
+    "links": {
+      "repository": "http://todo/",
+      "funding": "http://todo/"
+    }
+  },
+  "bindings": {
+    "c": true,
+    "go": true,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
+    "zig": false
+  }
+}
