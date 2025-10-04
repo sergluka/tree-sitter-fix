@@ -24,8 +24,7 @@
       }
     ],
     "links": {
-      "repository": "http://todo/",
-      "funding": "http://todo/"
+      "repository": "https://github.com/sergluka/tree-sitter-fix"
     }
   },
   "bindings": {
