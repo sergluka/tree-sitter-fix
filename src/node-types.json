@@ -1,0 +1,76 @@
+[
+  {
+    "type": "field",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "equals",
+          "named": true
+        },
+        {
+          "type": "tag",
+          "named": true
+        },
+        {
+          "type": "value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "message",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "delimiter",
+          "named": true
+        },
+        {
+          "type": "field",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "source_file",
+    "named": true,
+    "root": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "message",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "delimiter",
+    "named": true
+  },
+  {
+    "type": "equals",
+    "named": true
+  },
+  {
+    "type": "tag",
+    "named": true
+  },
+  {
+    "type": "value",
+    "named": true
+  }
+]

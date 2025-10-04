@@ -8,10 +8,27 @@
 // @ts-check
 
 module.exports = grammar({
-  name: "fix",
+  name: 'fix',
+
+  extras: $ => [/\r?\n/],
 
   rules: {
-    // TODO: add the actual grammar rules
-    source_file: $ => "hello"
-  }
+    source_file: $ => repeat1($.message),
+
+    message: $ => prec.right(
+      seq(
+        $.field,
+        repeat(seq($.delimiter, $.field)),
+        optional($.delimiter)
+      )
+    ),
+
+    field: $ => seq($.tag, $.equals, $.value),
+
+    equals: _ => "=",
+    tag: _ => /[0-9]+/,
+    value: _ => token.immediate(/[^\u0001|]*/),
+
+    delimiter: _ => token(choice("\u0001", "|")),
+  },
 });
