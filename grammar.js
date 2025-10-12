@@ -10,25 +10,31 @@
 module.exports = grammar({
   name: 'fix',
 
-  extras: $ => [/\r?\n/],
+  extras: $ => [],
 
   rules: {
-    source_file: $ => repeat1($.message),
+    source_file: $ =>
+      seq(
+        $.message,
+        repeat(seq($.message_sep, $.message)),
+        optional($.message_sep)
+      ),
 
-    message: $ => prec.right(
+    message: $ =>
       seq(
         $.field,
         repeat(seq($.delimiter, $.field)),
         optional($.delimiter)
-      )
-    ),
+      ),
 
     field: $ => seq($.tag, $.equals, $.value),
 
-    equals: _ => "=",
     tag: _ => /[0-9]+/,
-    value: _ => token.immediate(/[^\u0001|]*/),
+    equals: _ => "=",
+    value: _ => token.immediate(/[^\u0001|^\r\n]*/),
 
-    delimiter: _ => token(choice("\u0001", "|")),
+    delimiter: _ => token(choice("\u0001", "|", "^")),
+    message_sep: _ => token(/(?:\r?\n)+/),
   },
 });
+
