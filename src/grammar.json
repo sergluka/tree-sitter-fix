@@ -6,8 +6,32 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "message"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "line"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "comment"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "message"
+            }
+          ]
         },
         {
           "type": "REPEAT",
@@ -15,8 +39,11 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "SYMBOL",
-                "name": "message_sep"
+                "type": "REPEAT1",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "line"
+                }
               },
               {
                 "type": "SYMBOL",
@@ -29,8 +56,11 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "message_sep"
+              "type": "REPEAT1",
+              "content": {
+                "type": "SYMBOL",
+                "name": "line"
+              }
             },
             {
               "type": "BLANK"
@@ -38,6 +68,10 @@
           ]
         }
       ]
+    },
+    "ws": {
+      "type": "PATTERN",
+      "value": "[ \\t]+"
     },
     "message": {
       "type": "SEQ",
@@ -128,15 +162,36 @@
         ]
       }
     },
-    "message_sep": {
+    "line": {
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "(?:\\r?\\n)+"
+        "value": "[ \\t]*(?:\\r?\\n[ \\t]*)+"
+      }
+    },
+    "comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "#"
+          },
+          {
+            "type": "PATTERN",
+            "value": "[^\\r\\n]*"
+          }
+        ]
       }
     }
   },
-  "extras": [],
+  "extras": [
+    {
+      "type": "SYMBOL",
+      "name": "ws"
+    }
+  ],
   "conflicts": [],
   "precedences": [],
   "externals": [],

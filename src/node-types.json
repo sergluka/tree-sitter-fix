@@ -51,15 +51,23 @@
       "required": true,
       "types": [
         {
-          "type": "message",
+          "type": "comment",
           "named": true
         },
         {
-          "type": "message_sep",
+          "type": "line",
+          "named": true
+        },
+        {
+          "type": "message",
           "named": true
         }
       ]
     }
+  },
+  {
+    "type": "comment",
+    "named": true
   },
   {
     "type": "delimiter",
@@ -70,7 +78,7 @@
     "named": true
   },
   {
-    "type": "message_sep",
+    "type": "line",
     "named": true
   },
   {
@@ -80,5 +88,10 @@
   {
     "type": "value",
     "named": true
+  },
+  {
+    "type": "ws",
+    "named": true,
+    "extra": true
   }
 ]
