@@ -10,16 +10,17 @@
 module.exports = grammar({
   name: 'fix',
 
-  extras: $ => [$.ws],
+  extras: $ => [/[ \t]+/],
 
   rules: {
+    // a single `line` token spans any run of blank (or whitespace-only) lines
     source_file: $ => seq(
-      optional(repeat1($.line)),
-      choice($.comment, $.message),
-      repeat(seq(repeat1($.line), $.message)),
-      optional(repeat1($.line))
+      optional($.line),
+      repeat(seq($._entry, $.line)),
+      optional($._entry)
     ),
-    ws: _ => /[ \t]+/, 
+
+    _entry: $ => choice($.comment, $.message),
 
     message: $ => seq($.field, repeat(seq($.delimiter, $.field)), optional($.delimiter)),
 

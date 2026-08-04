@@ -48,7 +48,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "comment",
@@ -88,10 +88,5 @@
   {
     "type": "value",
     "named": true
-  },
-  {
-    "type": "ws",
-    "named": true,
-    "extra": true
   }
 ]
