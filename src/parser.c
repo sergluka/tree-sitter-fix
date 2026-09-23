@@ -12,7 +12,7 @@
 #define SYMBOL_COUNT 13
 #define ALIAS_COUNT 0
 #define TOKEN_COUNT 7
-#define EXTERNAL_TOKEN_COUNT 0
+#define EXTERNAL_TOKEN_COUNT 1
 #define FIELD_COUNT 0
 #define MAX_ALIAS_SEQUENCE_LENGTH 3
 #define MAX_RESERVED_WORD_SET_SIZE 0
@@ -22,10 +22,10 @@
 enum ts_symbol_identifiers {
   sym_tag = 1,
   sym_equals = 2,
-  sym_value = 3,
-  sym_delimiter = 4,
-  sym_line = 5,
-  sym_comment = 6,
+  sym_delimiter = 3,
+  sym_line = 4,
+  sym_comment = 5,
+  sym_value = 6,
   sym_source_file = 7,
   sym__entry = 8,
   sym_message = 9,
@@ -38,10 +38,10 @@ static const char * const ts_symbol_names[] = {
   [ts_builtin_sym_end] = "end",
   [sym_tag] = "tag",
   [sym_equals] = "equals",
-  [sym_value] = "value",
   [sym_delimiter] = "delimiter",
   [sym_line] = "line",
   [sym_comment] = "comment",
+  [sym_value] = "value",
   [sym_source_file] = "source_file",
   [sym__entry] = "_entry",
   [sym_message] = "message",
@@ -54,10 +54,10 @@ static const TSSymbol ts_symbol_map[] = {
   [ts_builtin_sym_end] = ts_builtin_sym_end,
   [sym_tag] = sym_tag,
   [sym_equals] = sym_equals,
-  [sym_value] = sym_value,
   [sym_delimiter] = sym_delimiter,
   [sym_line] = sym_line,
   [sym_comment] = sym_comment,
+  [sym_value] = sym_value,
   [sym_source_file] = sym_source_file,
   [sym__entry] = sym__entry,
   [sym_message] = sym_message,
@@ -79,10 +79,6 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .visible = true,
     .named = true,
   },
-  [sym_value] = {
-    .visible = true,
-    .named = true,
-  },
   [sym_delimiter] = {
     .visible = true,
     .named = true,
@@ -92,6 +88,10 @@ static const TSSymbolMetadata ts_symbol_metadata[] = {
     .named = true,
   },
   [sym_comment] = {
+    .visible = true,
+    .named = true,
+  },
+  [sym_value] = {
     .visible = true,
     .named = true,
   },
@@ -159,71 +159,46 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
   eof = lexer->eof(lexer);
   switch (state) {
     case 0:
-      if (eof) ADVANCE(3);
-      ADVANCE_MAP(
-        '\n', 8,
-        '\r', 1,
-        '#', 9,
-        '=', 5,
-        '\t', 2,
-        ' ', 2,
-        0x01, 7,
-        '^', 7,
-        '|', 7,
-      );
-      if (('0' <= lookahead && lookahead <= '9')) ADVANCE(4);
+      if (eof) ADVANCE(2);
+      if (lookahead == '\n') ADVANCE(6);
+      if (lookahead == '\r') ADVANCE(1);
+      if (lookahead == '#') ADVANCE(7);
+      if (lookahead == '=') ADVANCE(4);
+      if (lookahead == '\t' ||
+          lookahead == ' ') SKIP(0);
+      if (lookahead == 0x01 ||
+          lookahead == '^' ||
+          lookahead == '|') ADVANCE(5);
+      if (('0' <= lookahead && lookahead <= '9')) ADVANCE(3);
       END_STATE();
     case 1:
-      if (lookahead == '\n') ADVANCE(8);
+      if (lookahead == '\n') ADVANCE(6);
       END_STATE();
     case 2:
-      ADVANCE_MAP(
-        '\n', 8,
-        '\r', 1,
-        '#', 9,
-        '=', 5,
-        '\t', 2,
-        ' ', 2,
-        0x01, 7,
-        '^', 7,
-        '|', 7,
-      );
-      if (('0' <= lookahead && lookahead <= '9')) ADVANCE(4);
-      END_STATE();
-    case 3:
       ACCEPT_TOKEN(ts_builtin_sym_end);
       END_STATE();
-    case 4:
+    case 3:
       ACCEPT_TOKEN(sym_tag);
-      if (('0' <= lookahead && lookahead <= '9')) ADVANCE(4);
+      if (('0' <= lookahead && lookahead <= '9')) ADVANCE(3);
       END_STATE();
-    case 5:
+    case 4:
       ACCEPT_TOKEN(sym_equals);
       END_STATE();
-    case 6:
-      ACCEPT_TOKEN(sym_value);
-      if (lookahead != 0 &&
-          lookahead != 0x01 &&
-          lookahead != '\n' &&
-          lookahead != '\r' &&
-          lookahead != '^' &&
-          lookahead != '|') ADVANCE(6);
-      END_STATE();
-    case 7:
+    case 5:
       ACCEPT_TOKEN(sym_delimiter);
       END_STATE();
-    case 8:
+    case 6:
       ACCEPT_TOKEN(sym_line);
-      if (lookahead == '\n') ADVANCE(8);
+      if (lookahead == '\n') ADVANCE(6);
       if (lookahead == '\r') ADVANCE(1);
       if (lookahead == '\t' ||
-          lookahead == ' ') ADVANCE(8);
+          lookahead == ' ') ADVANCE(6);
       END_STATE();
-    case 9:
+    case 7:
       ACCEPT_TOKEN(sym_comment);
       if (lookahead != 0 &&
           lookahead != '\n' &&
-          lookahead != '\r') ADVANCE(9);
+          lookahead != '\r') ADVANCE(7);
       END_STATE();
     default:
       return false;
@@ -231,7 +206,7 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
 }
 
 static const TSLexerMode ts_lex_modes[STATE_COUNT] = {
-  [0] = {.lex_state = 0},
+  [0] = {.lex_state = 0, .external_lex_state = 1},
   [1] = {.lex_state = 0},
   [2] = {.lex_state = 0},
   [3] = {.lex_state = 0},
@@ -251,7 +226,7 @@ static const TSLexerMode ts_lex_modes[STATE_COUNT] = {
   [17] = {.lex_state = 0},
   [18] = {.lex_state = 0},
   [19] = {.lex_state = 0},
-  [20] = {.lex_state = 6},
+  [20] = {.lex_state = 0, .external_lex_state = 1},
   [21] = {.lex_state = 0},
 };
 
@@ -263,6 +238,7 @@ static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
     [sym_delimiter] = ACTIONS(1),
     [sym_line] = ACTIONS(1),
     [sym_comment] = ACTIONS(1),
+    [sym_value] = ACTIONS(1),
   },
   [STATE(1)] = {
     [sym_source_file] = STATE(19),
@@ -451,9 +427,29 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [52] = {.entry = {.count = 1, .reusable = true}}, SHIFT(12),
 };
 
+enum ts_external_scanner_symbol_identifiers {
+  ts_external_token_value = 0,
+};
+
+static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
+  [ts_external_token_value] = sym_value,
+};
+
+static const bool ts_external_scanner_states[2][EXTERNAL_TOKEN_COUNT] = {
+  [1] = {
+    [ts_external_token_value] = true,
+  },
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+void *tree_sitter_fix_external_scanner_create(void);
+void tree_sitter_fix_external_scanner_destroy(void *);
+bool tree_sitter_fix_external_scanner_scan(void *, TSLexer *, const bool *);
+unsigned tree_sitter_fix_external_scanner_serialize(void *, char *);
+void tree_sitter_fix_external_scanner_deserialize(void *, const char *, unsigned);
+
 #ifdef TREE_SITTER_HIDE_SYMBOLS
 #define TS_PUBLIC
 #elif defined(_WIN32)
@@ -486,6 +482,15 @@ TS_PUBLIC const TSLanguage *tree_sitter_fix(void) {
     .alias_sequences = &ts_alias_sequences[0][0],
     .lex_modes = (const void*)ts_lex_modes,
     .lex_fn = ts_lex,
+    .external_scanner = {
+      &ts_external_scanner_states[0][0],
+      ts_external_scanner_symbol_map,
+      tree_sitter_fix_external_scanner_create,
+      tree_sitter_fix_external_scanner_destroy,
+      tree_sitter_fix_external_scanner_scan,
+      tree_sitter_fix_external_scanner_serialize,
+      tree_sitter_fix_external_scanner_deserialize,
+    },
     .primary_state_ids = ts_primary_state_ids,
     .name = "fix",
     .max_reserved_word_set_size = 0,

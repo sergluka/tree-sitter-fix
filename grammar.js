@@ -12,6 +12,9 @@ module.exports = grammar({
 
   extras: $ => [/[ \t]+/],
 
+  // A separator inside a value is text unless a field or the end of the line follows it.
+  externals: $ => [$.value],
+
   rules: {
     // a single `line` token spans any run of blank (or whitespace-only) lines
     source_file: $ => seq(
@@ -28,10 +31,9 @@ module.exports = grammar({
 
     tag: _ => /[0-9]+/,
     equals: _ => "=",
-    value: _ => token.immediate(/[^\u0001|^\r\n]*/),
 
     delimiter: _ => token(choice("\u0001", "|", "^")),
-    line: _ => token(/[ \t]*(?:\r?\n[ \t]*)+/),
+    line: _ => token(/(?:\r?\n[ \t]*)+/),
 
     comment: _ => token(seq("#", /[^\r\n]*/)),
   },

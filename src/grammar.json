@@ -122,13 +122,6 @@
       "type": "STRING",
       "value": "="
     },
-    "value": {
-      "type": "IMMEDIATE_TOKEN",
-      "content": {
-        "type": "PATTERN",
-        "value": "[^\\u0001|^\\r\\n]*"
-      }
-    },
     "delimiter": {
       "type": "TOKEN",
       "content": {
@@ -153,7 +146,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PATTERN",
-        "value": "[ \\t]*(?:\\r?\\n[ \\t]*)+"
+        "value": "(?:\\r?\\n[ \\t]*)+"
       }
     },
     "comment": {
@@ -181,7 +174,12 @@
   ],
   "conflicts": [],
   "precedences": [],
-  "externals": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "value"
+    }
+  ],
   "inline": [],
   "supertypes": [],
   "reserved": {}
